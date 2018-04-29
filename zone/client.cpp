@@ -254,7 +254,9 @@ Client::Client(EQStreamInterface* ieqs)
 	mercSlot = 0;
 	InitializeMercInfo();
 	SetMerc(0);
-	if (RuleI(World, PVPMinLevel) > 0 && level >= RuleI(World, PVPMinLevel) && m_pp.pvp == 0) SetPVP(true, false);
+	// TODO: Remove this, as it does nothing since the client's player profile has not loaded yet. 
+	// Added check for pvp settings == 1 if PvP is enabled on the server period and is Rallos ruleset.
+	if ((RuleI(World, PVPMinLevel) > 0 && level >= RuleI(World, PVPMinLevel) && m_pp.pvp == 0) || RuleI(World, PVPSettings) == 1) SetPVP(true, false);
 	logging_enabled = CLIENT_DEFAULT_LOGGING_ENABLED;
 
 	//for good measure:
@@ -465,8 +467,12 @@ void Client::SendZoneInPackets()
 	if (!GetHideMe()) entity_list.QueueClients(this, outapp, true);
 	safe_delete(outapp);
 	SetSpawned();
-	if (GetPVP(false))	//force a PVP update until we fix the spawn struct
-		SendAppearancePacket(AT_PVP, GetPVP(false), true, false);
+	// Added check for pvp settings == 1 if PvP is enabled on the server period and is Rallos ruleset.
+	if ((RuleI(World, PVPMinLevel) > 0 && level >= RuleI(World, PVPMinLevel) && m_pp.pvp == 0) || RuleI(World, PVPSettings) == 1) 
+		SetPVP(true, false);
+	// Then we set pvp update based on this.
+	if (GetPVP())	//force a PVP update until we fix the spawn struct
+		SendAppearancePacket(AT_PVP, GetPVP(), true, false);
 
 	//Send AA Exp packet:
 	if (GetLevel() >= 51)
