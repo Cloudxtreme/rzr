@@ -1825,7 +1825,7 @@ bool Client::Death(Mob* killerMob, int32 damage, uint16 spell, EQEmu::skills::Sk
 
 			std::string tmp;
 			database.GetVariable("ServerType", tmp);
-			if (tmp[0] == '1' && tmp[1] == '\0' && killerMob != nullptr && killerMob->IsClient()) {
+			if ((tmp[0] == '1' && tmp[1] == '\0' || RuleI(World, PVPSettings) >= 1) && killerMob != nullptr && (killerMob->IsClient() || killerMob->IsPetOwnerClient())) {
 				database.GetVariable("PvPreward", tmp);
 				int reward = atoi(tmp.c_str());
 				if (reward == 3) {
@@ -1851,6 +1851,16 @@ bool Client::Death(Mob* killerMob, int32 damage, uint16 spell, EQEmu::skills::Sk
 								new_corpse->AllowPlayerLoot(group->members[i], i);
 							}
 						}
+					}
+				}
+				// If player is not grouped, we need to allow the player loot privs anyway. 
+				else {
+					// Also check for Pet kills
+					if (killerMob->IsPet() || killerMob->IsPetOwnerClient()) {
+						new_corpse->AllowPlayerLoot(killerMob->GetOwner()->CastToClient(), 0);
+					}
+					else {
+						new_corpse->AllowPlayerLoot(killerMob->CastToClient(), 0);
 					}
 				}
 			}
