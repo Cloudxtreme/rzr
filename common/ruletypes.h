@@ -732,6 +732,8 @@ RULE_BOOL(Inventory, DeleteTransformationMold, true) //False if you want mold to
 RULE_BOOL(Inventory, AllowAnyWeaponTransformation, false) //Weapons can use any weapon transformation
 RULE_BOOL(Inventory, TransformSummonedBags, false) //Transforms summoned bags into disenchanted ones instead of deleting
 RULE_INT(Inventory, PVPLootableEquipSlots, 0) //When looting a player's corpse, equipped items in slots listed here are lootable.
+RULE_BOOL(Inventory, PVPAllowWeaponryLoot, false) // When looting a player's corpse, if true, allows the looting of equipped primary/secondary/ranged items.
+RULE_INT(Inventory, PVPAllowWeaponryLootChance, 100) // 100 is 100% chance. If PVPAllowWeaponryLoot is true, this is the chance to loot equipped primary/secondary/ranged items.
 RULE_BOOL(Inventory, PVPCanLootNoTrade, false) //Can players loot no trade items from player corpses?
 RULE_BOOL(Inventory, PVPCanLootContainer, false) //Can players loot bags/containers from player corpses?
 RULE_BOOL(Inventory, PVPCanLootCoin, false) //Can players loot coin from player corpses?

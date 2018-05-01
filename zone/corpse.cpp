@@ -1181,6 +1181,36 @@ void Corpse::LootItem(Client *client, const EQApplicationPacket *app)
 					return;
 				}
 			}
+
+			// if Rallos Ruleset and Weaponry loot disallowed
+			if (!RuleB(Inventory, PVPAllowWeaponryLoot) && (RuleI(World, PVPSettings) == 1)) { 
+				// If ranged, primary or secondary
+				if (item_data->equip_slot == 11 || item_data->equip_slot == 13 || item_data->equip_slot == 14) {
+					client->Message(13, "You CANNOT loot ranged, primary or secondary equipped items.");
+					client->QueuePacket(app);
+					SendEndLootErrorPacket(client);
+					ResetLooter();
+					delete inst;
+					return;
+				}
+			} 
+			// if Rallos Ruleset and Weaponry loot allowed
+			else if (RuleB(Inventory, PVPAllowWeaponryLoot) && (RuleI(World, PVPSettings) == 1)) {
+				// If ranged, primary or secondary
+				if (item_data->equip_slot == 11 || item_data->equip_slot == 13 || item_data->equip_slot == 14) {
+					int roll = rand() % 101;
+					if (roll > RuleI(Inventory, PVPAllowWeaponryLootChance)) {
+						client->Message(13, "You have FAILED to loot this ranged, primary or secondary equipped item. Sorry!");
+						client->QueuePacket(app);
+						SendEndLootErrorPacket(client);
+						ResetLooter();
+						delete inst;
+						// Set KillItemID to 0 to prevent a second chance.
+						SetPlayerKillItemID(0);
+						return;
+					}
+				}
+			}
 		}
 
 		if (client->CheckLoreConflict(item)) {
