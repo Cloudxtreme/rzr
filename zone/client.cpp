@@ -9292,6 +9292,22 @@ bool Client::CanPvP(Client *c) {
 	if (c == nullptr) 
 		return false;
 
+	// Check for guild members
+	if (IsInAGuild() && c->IsInAGuild() && !RuleB(Combat, AllowGuildMembersPVP)) {
+		// check if in same guild ID
+		if (IsInGuild(c->GuildID())) {
+			return false;
+		}
+	}
+
+	// Check for group members
+	if (IsGrouped() && !RuleB(Combat, AllowGroupMembersPVP)) {
+		Group* group = GetGroup();
+		if (group->IsGroupMember(c->GetName())) {
+			return false;
+		}
+	}
+
 	//Dueling overrides normal PvP logic
 	if (IsDueling() && c->IsDueling() && GetDuelTarget() == c->GetID() && c->GetDuelTarget() == GetID())
 		return true;
